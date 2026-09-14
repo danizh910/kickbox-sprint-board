@@ -1,26 +1,75 @@
 @import "tailwindcss";
+@import "@fontsource-variable/fraunces";
+@import "@fontsource-variable/source-sans-3";
 
+/* Deliberately one look: warm paper, navy ink. No dark mode. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #f5efe3;
+  --paper-deep: #ebe2d0;
+  --ink: #2a2723;
+  --navy: #1f3b4d;
+  --rule: #d9cdb6;
+
+  /* shadcn tokens mapped onto the palette */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --primary: var(--navy);
+  --primary-foreground: #fbf8f1;
+  --secondary: var(--paper-deep);
+  --secondary-foreground: var(--ink);
+  --muted: var(--paper-deep);
+  --muted-foreground: #6b6358;
+  --popover: #fbf8f1;
+  --popover-foreground: var(--ink);
+  --destructive: #b3412f;
+  --border: var(--rule);
+  --input: var(--rule);
+  --ring: var(--navy);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-navy: var(--navy);
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
+  --color-rule: var(--rule);
+  --font-sans: "Source Sans 3 Variable", "Segoe UI", system-ui, sans-serif;
+  --font-serif: "Fraunces Variable", Georgia, "Times New Roman", serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--paper);
+  /* faint paper grain */
+  background-image:
+    radial-gradient(rgba(120, 100, 70, 0.06) 1px, transparent 1px),
+    radial-gradient(rgba(120, 100, 70, 0.04) 1px, transparent 1px);
+  background-size: 22px 22px, 13px 13px;
+  background-position: 0 0, 7px 11px;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 17px;
+}
+
+.sticky-note {
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.08),
+    0 6px 10px -4px rgba(60, 40, 10, 0.35);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.sticky-note:hover {
+  transform: rotate(0deg) scale(1.02) !important;
 }

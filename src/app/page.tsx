@@ -1,103 +1,80 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Priority } from "@/components/priority";
+import { getEpics, getStories, PRODUCT_VISION } from "@/lib/db";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const [epics, stories] = await Promise.all([getEpics(), getStories()]);
+  const totalPoints = stories.reduce((s, x) => s + x.points, 0);
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <>
+      <section className="grid gap-6 md:grid-cols-[10rem_1fr]">
+        <p className="font-serif text-sm font-semibold tracking-[0.2em] text-navy uppercase md:pt-3">Produktvision</p>
+        <blockquote className="border-l-4 border-navy pl-5 font-serif text-xl leading-relaxed text-navy sm:text-2xl sm:leading-relaxed">
+          {PRODUCT_VISION}
+        </blockquote>
+      </section>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <section className="mt-14">
+        <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-rule pb-3">
+          <h1 className="font-serif text-3xl font-semibold text-navy">Epics</h1>
+          <p className="text-muted-foreground">
+            {epics.length} Epics · {stories.length} User Stories · {totalPoints} Story Points ·{" "}
+            <Link href="/backlog" className="font-semibold text-navy underline underline-offset-4">
+              ganzer Backlog
+            </Link>
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {epics.map((epic) => {
+            const own = stories.filter((s) => s.epic_id === epic.id);
+            const points = own.reduce((s, x) => s + x.points, 0);
+            return (
+              <details
+                key={epic.id}
+                className="group rounded-sm border border-black/10 shadow-[0_2px_0_rgba(0,0,0,0.06)] open:col-span-full"
+                style={{ backgroundColor: epic.color }}
+              >
+                <summary className="flex cursor-pointer list-none flex-col gap-3 p-5 [&::-webkit-details-marker]:hidden">
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="font-serif text-4xl font-bold text-navy/85">{epic.id}</span>
+                    <span className="rounded-sm bg-white/60 px-2 py-0.5 text-sm font-semibold text-navy">
+                      Teilprojekt {epic.tp}
+                    </span>
+                  </div>
+                  <h2 className="font-serif text-xl leading-snug font-semibold text-navy">{epic.title}</h2>
+                  <div className="flex items-center justify-between text-[15px] text-ink/80">
+                    <span>
+                      {own.length} Stories · <strong>{points} SP</strong>
+                    </span>
+                    <span className="text-sm font-semibold text-navy group-open:hidden">Stories zeigen ▾</span>
+                    <span className="hidden text-sm font-semibold text-navy group-open:inline">schliessen ▴</span>
+                  </div>
+                </summary>
+                <ul className="mx-2 mb-2 divide-y divide-rule rounded-sm bg-[#fbf8f1]">
+                  {own.map((s) => (
+                    <li key={s.id} className="flex flex-col gap-2 p-4 sm:flex-row sm:items-start sm:gap-6">
+                      <p className="flex-1 leading-relaxed">{s.text}</p>
+                      <div className="flex shrink-0 items-center gap-3">
+                        {s.sprint1 && (
+                          <Link href="/sprint-1" className="text-xs font-bold text-navy underline underline-offset-2">
+                            Sprint 1
+                          </Link>
+                        )}
+                        <Priority value={s.priority} />
+                        <span className="w-12 text-right font-serif text-lg font-semibold text-navy">{s.points} SP</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            );
+          })}
+        </div>
+      </section>
+    </>
   );
 }
